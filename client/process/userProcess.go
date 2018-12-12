@@ -1,16 +1,20 @@
-package main
+package process
 
 import (
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
-	"go_code/chatroom/common/message"
+	"go_code/chatroomRebuild/client/utils"
+	"go_code/chatroomRebuild/common/message"
 	"net"
 )
 
-func login(userID int, userPWD string) (err error) {
-	// fmt.Printf("userID = %d , userPWD = %s\n", userID, userPWD)
-	// return nil
+// UserProcess 处理用户的
+type UserProcess struct {
+}
+
+// Login client登陆的函数
+func (userProcess *UserProcess) Login(userID int, userPWD string) (err error) {
 
 	// 连接
 	conn, err := net.Dial("tcp", "127.0.0.1:8889")
@@ -58,20 +62,23 @@ func login(userID int, userPWD string) (err error) {
 		fmt.Println("conn.Write data 失败", err)
 		return
 	}
-	// time.Sleep(5 * time.Second)
-	// fmt.Println("休眠了10秒钟")
-	mes, err = readPkg(conn)
+
+	tf := &utils.Transfer{
+		Conn: conn,
+	}
+	mes, err = tf.ReadPkg()
 	if err != nil {
-		fmt.Println("readPkg(conn) fail, err = ", err)
+		fmt.Println("tf.ReadPkg() fail, err = ", err)
 		return
 	}
+
 	var loginResMes message.LoginResMes
 	err = json.Unmarshal([]byte(mes.Data), &loginResMes)
 	if loginResMes.Code == 200 {
 		fmt.Println("登陆成功")
+		ShowMenu()
 	} else if loginResMes.Code == 500 {
 		fmt.Println(loginResMes.Error)
 	}
-
 	return
 }

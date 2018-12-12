@@ -13,8 +13,8 @@ type UserProcess struct {
 	Conn net.Conn
 }
 
-// serverLoginMes 服务端处理登陆消息的函数
-func (userProcess *UserProcess) serverLoginMes(mes *message.Message) (err error) {
+// ServerLoginMes 服务端处理登陆消息的函数
+func (userProcess *UserProcess) ServerLoginMes(mes *message.Message) (err error) {
 	var loginMes message.LoginMes
 	err = json.Unmarshal([]byte(mes.Data), &loginMes)
 	if err != nil {
@@ -45,6 +45,7 @@ func (userProcess *UserProcess) serverLoginMes(mes *message.Message) (err error)
 	if err != nil {
 		fmt.Println("json.Marshal fail , err = ", err)
 	}
+	fmt.Println("这个是服务端返回的数据， data =", data)
 
 	tf := &utils.Transfer{
 		Conn: userProcess.Conn,
