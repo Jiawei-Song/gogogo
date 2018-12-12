@@ -15,7 +15,6 @@ type UserProcess struct {
 
 // Login client登陆的函数
 func (userProcess *UserProcess) Login(userID int, userPWD string) (err error) {
-
 	// 连接
 	conn, err := net.Dial("tcp", "127.0.0.1:8889")
 	if err != nil {
@@ -76,6 +75,8 @@ func (userProcess *UserProcess) Login(userID int, userPWD string) (err error) {
 	err = json.Unmarshal([]byte(mes.Data), &loginResMes)
 	if loginResMes.Code == 200 {
 		fmt.Println("登陆成功")
+		// 启动一个协程，监听服务端发送给客户端的数据，如果有，就显示出来
+		go serverProcessMes(conn)
 		ShowMenu()
 	} else if loginResMes.Code == 500 {
 		fmt.Println(loginResMes.Error)

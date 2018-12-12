@@ -35,14 +35,5 @@ func main() {
 		default:
 			fmt.Println("输入的信息有误，请重新输入")
 		}
-		// fmt.Println(loop)
-		// if key == 1 {
-		// 	fmt.Println("请输入用户ID")
-		// 	fmt.Scanln(&userID)
-		// 	fmt.Println("请输入用户密码")
-		// 	fmt.Scanln(&userPWD)
-		// 	// up := &process.UserProcess{}
-		// 	// up.Login(userID, userPWD)
-		// }
 	}
 }

@@ -2,6 +2,8 @@ package process
 
 import (
 	"fmt"
+	"go_code/chatroomRebuild/client/utils"
+	"net"
 	"os"
 )
 
@@ -31,5 +33,21 @@ func ShowMenu() {
 			fmt.Println("输入的信息有误，请重新输入")
 		}
 		// fmt.Println(loop)
+	}
+}
+
+func serverProcessMes(conn net.Conn) {
+	fmt.Println("进入聊天室后启动了一个协程，监听服务端返回的消息")
+	tf := &utils.Transfer{
+		Conn: conn,
+	}
+	for {
+		fmt.Println("正在读取服务端返回的消息")
+		mes, err := tf.ReadPkg()
+		if err != nil {
+			fmt.Println("serverProcessMes 里的 tf.ReadPkg 出错， err = ", err)
+			return
+		}
+		fmt.Println(mes)
 	}
 }

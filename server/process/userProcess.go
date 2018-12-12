@@ -45,7 +45,7 @@ func (userProcess *UserProcess) ServerLoginMes(mes *message.Message) (err error)
 	if err != nil {
 		fmt.Println("json.Marshal fail , err = ", err)
 	}
-	fmt.Println("这个是服务端返回的数据， data =", data)
+	fmt.Println("这个是服务端返回的数据， data =", string(data))
 
 	tf := &utils.Transfer{
 		Conn: userProcess.Conn,
