@@ -55,5 +55,4 @@ func (processor *Processor) LoopProcess() (err error) {
 			return err
 		}
 	}
-	return
 }

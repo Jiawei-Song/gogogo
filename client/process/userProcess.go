@@ -78,8 +78,8 @@ func (userProcess *UserProcess) Login(userID int, userPWD string) (err error) {
 		// 启动一个协程，监听服务端发送给客户端的数据，如果有，就显示出来
 		go serverProcessMes(conn)
 		ShowMenu()
-	} else if loginResMes.Code == 500 {
-		fmt.Println(loginResMes.Error)
+	} else if loginResMes.Code != 200 {
+		fmt.Println(loginResMes.Code, loginResMes.Error)
 	}
 	return
 }

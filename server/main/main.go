@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"go_code/chatroomRebuild/server/model"
 	"io"
 	"net"
 )
@@ -19,7 +20,14 @@ func goprocess(conn net.Conn) {
 	fmt.Println("一次连接结束")
 }
 
+func initUserDao() {
+	model.MyUserDao = model.NewUserDao(pool)
+}
+
 func main() {
+	// 初始化一个redis的连接池
+	initPool("127.0.0.1:6379", 8, 100)
+	initUserDao()
 	fmt.Println("服务器在8889监听。。。。")
 	listen, err := net.Listen("tcp", "127.0.0.1:8889")
 	defer listen.Close()

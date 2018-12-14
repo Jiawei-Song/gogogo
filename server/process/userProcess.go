@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"go_code/chatroomRebuild/common/message"
+	"go_code/chatroomRebuild/server/model"
 	"go_code/chatroomRebuild/server/utils"
 	"net"
 )
@@ -26,12 +27,24 @@ func (userProcess *UserProcess) ServerLoginMes(mes *message.Message) (err error)
 
 	var loginResMes message.LoginResMes
 
-	// 如果用户 id 为 100 ，密码为 123456， 就合法
-	if loginMes.UserID == 100 && loginMes.UserPWD == "123456" {
-		loginResMes.Code = 200
+	// 服务端进行redis校验
+	user, err := model.MyUserDao.Login(loginMes.UserID, loginMes.UserPWD)
+	if err != nil {
+		fmt.Println("MyUserDao.Login 返回的错误", err)
+		if err == model.ERROR_USER_NOTEXISTS {
+			loginResMes.Code = 404
+			loginResMes.Error = "用户不存在"
+		} else if err == model.ERROR_USER_PWD {
+			loginResMes.Code = 304
+			loginResMes.Error = "密码不正确"
+		} else {
+			loginResMes.Code = 505
+			loginResMes.Error = "未知错误"
+		}
+
 	} else {
-		loginResMes.Code = 500
-		loginResMes.Error = "用户不存在"
+		loginResMes.Code = 200
+		fmt.Println(user, "登陆成功")
 	}
 
 	data, err := json.Marshal(loginResMes)
