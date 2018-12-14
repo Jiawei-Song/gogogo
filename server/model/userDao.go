@@ -63,20 +63,22 @@ func (userDao *UserDao) Register(user *message.User) (err error) {
 	conn := userDao.pool.Get()
 	defer conn.Close()
 	_, err = userDao.getUserByID(conn, user.UserID)
+	//
 	if err != nil {
+		if err == ERROR_USER_NOTEXISTS {
+			data, err := json.Marshal(user)
+			if err != nil {
+				fmt.Println("userDao里的Register函数序列化user失败，err =", err)
+				return err
+			}
+			_, err = conn.Do("hset", "users", user.UserID, string(data))
+			if err != nil {
+				fmt.Println("注册里的写入redis出错，err =", err)
+				return err
+			}
+		}
+	} else {
 		err = ERROR_USER_EXISTS
-		return
-	} else if err == ERROR_USER_NOTEXISTS {
-		data, err := json.Marshal(user)
-		if err != nil {
-			fmt.Println("userDao里的Register函数序列化user失败，err =", err)
-			return err
-		}
-		_, err = conn.Do("hset", "users", user.UserID, string(data))
-		if err != nil {
-			fmt.Println("注册里的写入redis出错，err =", err)
-			return err
-		}
 	}
 	return
 }
