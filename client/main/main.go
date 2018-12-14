@@ -7,6 +7,7 @@ import (
 
 var userID int
 var userPWD string
+var userName string
 
 func main() {
 	var key int
@@ -29,6 +30,14 @@ func main() {
 			up.Login(userID, userPWD)
 		case 2:
 			fmt.Println("注册用户")
+			fmt.Println("请输入用户ID")
+			fmt.Scanln(&userID)
+			fmt.Println("请输入用户密码")
+			fmt.Scanln(&userPWD)
+			fmt.Println("请输入用户名字")
+			fmt.Scanln(&userName)
+			up := &process.UserProcess{}
+			up.Register(userID, userPWD, userName)
 		case 3:
 			fmt.Println("退   出")
 			// loop = false

@@ -25,6 +25,10 @@ func (processor *Processor) serverProcessMes(mes *message.Message) (err error) {
 		err = up.ServerLoginMes(mes)
 	case message.RegisterMesType:
 		// 处理注册的逻辑
+		up := &process.UserProcess{
+			Conn: processor.Conn,
+		}
+		err = up.ServerRegisterMes(mes)
 	default:
 		fmt.Println("消息类型不存在，无法处理")
 
@@ -35,6 +39,7 @@ func (processor *Processor) serverProcessMes(mes *message.Message) (err error) {
 //LoopProcess 循环处理的主函数
 func (processor *Processor) LoopProcess() (err error) {
 	for {
+		fmt.Println("LoopProcess 开始")
 		tf := &utils.Transfer{
 			Conn: processor.Conn,
 		}
@@ -48,11 +53,12 @@ func (processor *Processor) LoopProcess() (err error) {
 			fmt.Println("readPkg 出错, err = ", err)
 			return err
 		}
-		fmt.Println(mes)
+		fmt.Println("服务端读到的mes = ", mes)
 		err = processor.serverProcessMes(&mes)
 		if err != nil {
 			fmt.Println()
 			return err
 		}
+		fmt.Println("LoopProcess 结束")
 	}
 }

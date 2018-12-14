@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/json"
 	"fmt"
+	"go_code/chatroomRebuild/common/message"
 
 	"github.com/garyburd/redigo/redis"
 )
@@ -23,7 +24,7 @@ func NewUserDao(pool *redis.Pool) (userDao *UserDao) {
 	return
 }
 
-func (userDao *UserDao) getUserByID(conn redis.Conn, id int) (user *User, err error) {
+func (userDao *UserDao) getUserByID(conn redis.Conn, id int) (user *message.User, err error) {
 	str, err := redis.String(conn.Do("hget", "users", id))
 	if err != nil {
 		if err == redis.ErrNil {
@@ -33,7 +34,7 @@ func (userDao *UserDao) getUserByID(conn redis.Conn, id int) (user *User, err er
 		}
 		return
 	}
-	user = &User{}
+	user = &message.User{}
 	err = json.Unmarshal([]byte(str), user)
 	if err != nil {
 		fmt.Println("UserDao json.Unmarshal fail, err = ", err)
@@ -42,8 +43,8 @@ func (userDao *UserDao) getUserByID(conn redis.Conn, id int) (user *User, err er
 	return
 }
 
-//Login aa
-func (userDao *UserDao) Login(userID int, userPWD string) (user *User, err error) {
+//Login model包里userDao的Login函数，用于和redis进行校验
+func (userDao *UserDao) Login(userID int, userPWD string) (user *message.User, err error) {
 	conn := userDao.pool.Get()
 	defer conn.Close()
 	user, err = userDao.getUserByID(conn, userID)
@@ -53,6 +54,29 @@ func (userDao *UserDao) Login(userID int, userPWD string) (user *User, err error
 	if user.UserPWD != userPWD {
 		err = ERROR_USER_PWD
 		return
+	}
+	return
+}
+
+//Register model包里userDao的Register函数，用于和redis进行校验
+func (userDao *UserDao) Register(user *message.User) (err error) {
+	conn := userDao.pool.Get()
+	defer conn.Close()
+	_, err = userDao.getUserByID(conn, user.UserID)
+	if err != nil {
+		err = ERROR_USER_EXISTS
+		return
+	} else if err == ERROR_USER_NOTEXISTS {
+		data, err := json.Marshal(user)
+		if err != nil {
+			fmt.Println("userDao里的Register函数序列化user失败，err =", err)
+			return err
+		}
+		_, err = conn.Do("hset", "users", user.UserID, string(data))
+		if err != nil {
+			fmt.Println("注册里的写入redis出错，err =", err)
+			return err
+		}
 	}
 	return
 }
