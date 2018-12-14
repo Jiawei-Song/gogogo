@@ -39,7 +39,6 @@ func (processor *Processor) serverProcessMes(mes *message.Message) (err error) {
 //LoopProcess 循环处理的主函数
 func (processor *Processor) LoopProcess() (err error) {
 	for {
-		fmt.Println("LoopProcess 开始")
 		tf := &utils.Transfer{
 			Conn: processor.Conn,
 		}
@@ -59,6 +58,5 @@ func (processor *Processor) LoopProcess() (err error) {
 			fmt.Println()
 			return err
 		}
-		fmt.Println("LoopProcess 结束")
 	}
 }

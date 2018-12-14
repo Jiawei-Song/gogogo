@@ -65,6 +65,7 @@ func (userDao *UserDao) Register(user *message.User) (err error) {
 	_, err = userDao.getUserByID(conn, user.UserID)
 	//
 	if err != nil {
+		// 有err, err为用户不存在，那么就把它写入redis
 		if err == ERROR_USER_NOTEXISTS {
 			data, err := json.Marshal(user)
 			if err != nil {
@@ -76,7 +77,9 @@ func (userDao *UserDao) Register(user *message.User) (err error) {
 				fmt.Println("注册里的写入redis出错，err =", err)
 				return err
 			}
+			return nil
 		}
+		fmt.Println("打印注册getUserByID的错误，err =", err)
 	} else {
 		err = ERROR_USER_EXISTS
 	}

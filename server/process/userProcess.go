@@ -86,6 +86,7 @@ func (userProcess *UserProcess) ServerRegisterMes(mes *message.Message) (err err
 	// 服务端进行redis校验
 	err = model.MyUserDao.Register(&registerMes.User)
 	if err != nil {
+		fmt.Println("--------------------", err)
 		if err == model.ERROR_USER_EXISTS {
 			registerResMes.Code = 308
 			// "用户已存在"
@@ -93,6 +94,7 @@ func (userProcess *UserProcess) ServerRegisterMes(mes *message.Message) (err err
 		} else {
 			registerResMes.Code = 506
 			registerResMes.Error = "注册发生未知错误"
+			fmt.Println("注册发生未知错误 = ", err)
 		}
 	} else {
 		registerResMes.Code = 200
