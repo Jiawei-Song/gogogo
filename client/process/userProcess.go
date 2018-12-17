@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"go_code/chatroomRebuild/client/utils"
 	"go_code/chatroomRebuild/common/message"
+	"io"
 	"net"
 	"os"
 )
@@ -52,9 +53,8 @@ func (userProcess *UserProcess) Login(userID int, userPWD string) (err error) {
 		fmt.Println("conn.Write data 失败", err)
 		return
 	}
-
 	mes, err = tf.ReadPkg()
-	if err != nil {
+	if err != nil && err != io.EOF {
 		fmt.Println("tf.ReadPkg() fail, err = ", err)
 		return
 	}
@@ -63,9 +63,18 @@ func (userProcess *UserProcess) Login(userID int, userPWD string) (err error) {
 	err = json.Unmarshal([]byte(mes.Data), &loginResMes)
 	if loginResMes.Code == 200 {
 		fmt.Println("登陆成功")
+		// 处理在线用户相关
+		for _, v := range loginResMes.OnlineUserIDs {
+			if v == userID {
+				continue
+			}
+			fmt.Println("在线用户id有：", v)
+			// onlineUsers[v]
+		}
 		// 启动一个协程，监听服务端发送给客户端的数据，如果有，就显示出来
 		go serverProcessMes(conn)
 		ShowMenu()
+
 	} else if loginResMes.Code != 200 {
 		fmt.Println(loginResMes.Code, loginResMes.Error)
 	}
@@ -114,7 +123,7 @@ func (userProcess *UserProcess) Register(userID int, userPWD string, userName st
 		return
 	}
 	mes, err = tf.ReadPkg()
-	if err != nil {
+	if err != nil && err != io.EOF {
 		fmt.Println("tf.ReadPkg() fail, err = ", err)
 		return
 	}

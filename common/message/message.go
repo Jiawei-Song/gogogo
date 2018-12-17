@@ -1,10 +1,16 @@
 package message
 
 const (
-	LoginMesType       = "LoginMes"
-	LoginResMesType    = "LoginResMes"
-	RegisterMesType    = "RegisterMes"
-	RegisterResMesType = "RegisterResMes"
+	LoginMesType            = "LoginMes"
+	LoginResMesType         = "LoginResMes"
+	RegisterMesType         = "RegisterMes"
+	RegisterResMesType      = "RegisterResMes"
+	NotifyUserStatusMesType = "NotifyUserStatusMes"
+)
+const (
+	UserOnline = iota
+	UserOffline
+	UserBusyStatus
 )
 
 // Message 消息结构体
@@ -22,8 +28,9 @@ type LoginMes struct {
 
 // LoginResMes 登陆返回消息
 type LoginResMes struct {
-	Code  int    `json:code` // 返回的状态码
-	Error string `json:err`
+	Code          int `json:code` // 返回的状态码
+	OnlineUserIDs []int
+	Error         string `json:err`
 }
 
 // RegisterMes 注册消息
@@ -35,4 +42,10 @@ type RegisterMes struct {
 type RegisterResMes struct {
 	Code  int    `json:code`
 	Error string `json:err`
+}
+
+// NotifyUserStatusMes 用户状态变化时用到的结构体
+type NotifyUserStatusMes struct {
+	UserID int `json:userID`
+	Status int `json:status`
 }

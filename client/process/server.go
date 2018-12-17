@@ -3,6 +3,7 @@ package process
 import (
 	"fmt"
 	"go_code/chatroomRebuild/client/utils"
+	"go_code/chatroomRebuild/common/message"
 	"net"
 	"os"
 )
@@ -47,6 +48,12 @@ func serverProcessMes(conn net.Conn) {
 		if err != nil {
 			fmt.Println("serverProcessMes 里的 tf.ReadPkg 出错， err = ", err)
 			return
+		}
+		switch mes.Type {
+		case message.NotifyUserStatusMesType:
+			// 一顿处理
+		default:
+			fmt.Println("服务端返回的消息类型处理不了")
 		}
 		fmt.Println(mes)
 	}
