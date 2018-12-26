@@ -42,13 +42,12 @@ func (userProcess *UserProcess) Login(userID int, userPWD string) (err error) {
 		fmt.Println("mes 序列化失败， err =", err)
 		return
 	}
-	fmt.Println("登陆序列化的data =", string(data))
 
 	// 消息构建完成之后，创建一个tf实例，用于通讯
 	tf := &utils.Transfer{
 		Conn: conn,
 	}
-	tf.WritePkg(data)
+	err = tf.WritePkg(data)
 	if err != nil {
 		fmt.Println("conn.Write data 失败", err)
 		return
@@ -63,13 +62,21 @@ func (userProcess *UserProcess) Login(userID int, userPWD string) (err error) {
 	err = json.Unmarshal([]byte(mes.Data), &loginResMes)
 	if loginResMes.Code == 200 {
 		fmt.Println("登陆成功")
+		// 初始化 CurUser
+		CurUser.Conn = conn
+		CurUser.UserID = userID
+		CurUser.UserStatus = message.UserOnline
 		// 处理在线用户相关
 		for _, v := range loginResMes.OnlineUserIDs {
 			if v == userID {
 				continue
 			}
 			fmt.Println("在线用户id有：", v)
-			// onlineUsers[v]
+			user := &message.User{
+				UserID:     v,
+				UserStatus: message.UserOnline,
+			}
+			onlineUsers[v] = user
 		}
 		// 启动一个协程，监听服务端发送给客户端的数据，如果有，就显示出来
 		go serverProcessMes(conn)
@@ -111,13 +118,12 @@ func (userProcess *UserProcess) Register(userID int, userPWD string, userName st
 		fmt.Println("mes 序列化失败， err =", err)
 		return
 	}
-	fmt.Println("注册序列化的data =", string(data))
 
 	// 消息构建完成之后，创建一个tf实例，用于通讯
 	tf := &utils.Transfer{
 		Conn: conn,
 	}
-	tf.WritePkg(data)
+	err = tf.WritePkg(data)
 	if err != nil {
 		fmt.Println("conn.Write data 失败", err)
 		return
@@ -134,8 +140,6 @@ func (userProcess *UserProcess) Register(userID int, userPWD string, userName st
 		fmt.Println("注册成功")
 		os.Exit(0)
 		// // 启动一个协程，监听服务端发送给客户端的数据，如果有，就显示出来
-		// go serverProcessMes(conn)
-		// ShowMenu()
 	} else if registerResMes.Code != 200 {
 		fmt.Println(registerResMes.Code, registerResMes.Error)
 		os.Exit(0)

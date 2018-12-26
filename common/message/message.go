@@ -6,6 +6,7 @@ const (
 	RegisterMesType         = "RegisterMes"
 	RegisterResMesType      = "RegisterResMes"
 	NotifyUserStatusMesType = "NotifyUserStatusMes"
+	SmsMesType              = "SmsMes"
 )
 const (
 	UserOnline = iota
@@ -48,4 +49,10 @@ type RegisterResMes struct {
 type NotifyUserStatusMes struct {
 	UserID int `json:userID`
 	Status int `json:status`
+}
+
+// SmsMes 发送的消息
+type SmsMes struct {
+	Content string `json:content`
+	User           // 匿名结构体
 }

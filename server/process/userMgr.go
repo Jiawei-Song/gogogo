@@ -22,7 +22,7 @@ func (userMgr *UserMgr) AddOnlineUser(up *UserProcess) {
 	userMgr.onlineUsers[up.UserID] = up
 }
 
-//DelOnlineUser 添加在线用户
+//DelOnlineUser 删除在线用户
 func (userMgr *UserMgr) DelOnlineUser(up *UserProcess) {
 	delete(userMgr.onlineUsers, up.UserID)
 }

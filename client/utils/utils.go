@@ -9,11 +9,13 @@ import (
 	"net"
 )
 
+// Transfer 用于网络传输的对象结构体
 type Transfer struct {
 	Conn net.Conn
 	Buf  [8096]byte
 }
 
+// ReadPkg 从链接中读取消息的函数
 func (transfer *Transfer) ReadPkg() (mes message.Message, err error) {
 	// buf := make([]byte, 8096)
 	_, err = transfer.Conn.Read(transfer.Buf[:4])
@@ -24,7 +26,6 @@ func (transfer *Transfer) ReadPkg() (mes message.Message, err error) {
 		fmt.Println("conn.Read, err", err)
 		return
 	}
-	fmt.Println("读到的buf", transfer.Buf[:4])
 
 	var pkgLen uint32
 	pkgLen = binary.BigEndian.Uint32(transfer.Buf[:4])
@@ -40,6 +41,7 @@ func (transfer *Transfer) ReadPkg() (mes message.Message, err error) {
 	return
 }
 
+// WritePkg 向链接中写入消息的函数
 func (transfer *Transfer) WritePkg(data []byte) (err error) {
 	var pkglen uint32
 	pkglen = uint32(len(data))
@@ -56,6 +58,5 @@ func (transfer *Transfer) WritePkg(data []byte) (err error) {
 		return
 	}
 
-	fmt.Printf("客户端，发送的消息长度为%d\n", pkglen)
 	return
 }
